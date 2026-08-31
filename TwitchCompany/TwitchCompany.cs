@@ -15,10 +15,14 @@ namespace TwitchCompany
         internal new static ManualLogSource Logger { get; private set; } = null!;
         internal static Harmony? Harmony { get; set; }
 
+        //Config things go here.
+
         private void Awake()
         {
             Logger = base.Logger;
             Instance = this;
+
+            InitialiseConfigs();
 
             NetcodePatcher();
 
@@ -44,5 +48,10 @@ namespace TwitchCompany
                 }
             }
         }
+        private void InitialiseConfigs()
+        {
+            //Put in config init things here there'll be a lot of those. maybe move into another file in future?
+        }
+
     }
 }
