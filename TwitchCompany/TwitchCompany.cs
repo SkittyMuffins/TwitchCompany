@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 using TwitchChatAPI;
+using Unity.Netcode;
 
 namespace TwitchCompany
 {
@@ -11,11 +12,16 @@ namespace TwitchCompany
     [BepInDependency("TwitchChatAPI", BepInDependency.DependencyFlags.HardDependency)] //yes that's the entire guid
     public class TwitchCompany : BaseUnityPlugin
     {
+
+        //Typical mod things
         public static TwitchCompany Instance { get; private set; } = null!;
         internal new static ManualLogSource Logger { get; private set; } = null!;
         internal static Harmony? Harmony { get; set; }
 
-        //Config things go here.
+        //Config entries below
+
+        //Other important things for the mod to create
+        public static GameObject coolPrefab;
 
         private void Awake()
         {
@@ -52,6 +58,5 @@ namespace TwitchCompany
         {
             //Put in config init things here there'll be a lot of those. maybe move into another file in future?
         }
-
     }
 }

@@ -1,4 +1,9 @@
 using HarmonyLib;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace TwitchCompany.Patches
 {
@@ -10,6 +15,15 @@ namespace TwitchCompany.Patches
         private static void StartOfRoundPostfix(StartOfRound __instance)
         {
             HUDManager.Instance.DisplayTip("mod works", "yippee", false);
+
+            if(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                TwitchCompany.Logger.LogInfo("Trying to instantiate and spawn networkprefab...");
+
+                GameObject obj = GameObject.Instantiate(TwitchCompany.coolPrefab, Vector3.zero, Quaternion.identity);
+                obj.GetComponent<NetworkObject>().Spawn(true);
+                TwitchCompany.Logger.LogInfo("Successfully spawned network prefab!");
+            }
         }
     }
 }
