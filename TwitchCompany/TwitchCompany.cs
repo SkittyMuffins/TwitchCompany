@@ -3,10 +3,12 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
+using TwitchChatAPI;
 
 namespace TwitchCompany
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("TwitchChatAPI", BepInDependency.DependencyFlags.HardDependency)] //yes that's the entire guid
     public class TwitchCompany : BaseUnityPlugin
     {
         public static TwitchCompany Instance { get; private set; } = null!;
@@ -19,29 +21,11 @@ namespace TwitchCompany
             Instance = this;
 
             NetcodePatcher();
-            Patch();
 
-            Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
-        }
-
-        internal static void Patch()
-        {
             Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
-
-            Logger.LogDebug("Patching...");
-
             Harmony.PatchAll();
 
-            Logger.LogDebug("Finished patching!");
-        }
-
-        internal static void Unpatch()
-        {
-            Logger.LogDebug("Unpatching...");
-
-            Harmony?.UnpatchSelf();
-
-            Logger.LogDebug("Finished unpatching!");
+            Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
 
         private void NetcodePatcher()
