@@ -23,14 +23,17 @@ namespace TwitchCompany
         //Other important things for the mod to create
         public static GameObject coolPrefab;
 
+        public static string[] BALDWhitelistArray;
+        public static string[] BALDBlacklistArray;
+
         private void Awake()
         {
             Logger = base.Logger;
             Instance = this;
 
-            InitialiseConfigs();
-
-            
+            ConfigBuilder.InitialiseConfig();
+            BALDWhitelistArray = Methods.CSVSeperator(ConfigBuilder.BALDWhitelist.Value);
+            BALDBlacklistArray = Methods.CSVSeperator(ConfigBuilder.BALDBlacklist.Value);
 
             Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
             Harmony.PatchAll();
@@ -38,10 +41,5 @@ namespace TwitchCompany
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
 
-       
-        private void InitialiseConfigs()
-        {
-            //Put in config init things here there'll be a lot of those. maybe move into another file in future?
-        }
     }
 }

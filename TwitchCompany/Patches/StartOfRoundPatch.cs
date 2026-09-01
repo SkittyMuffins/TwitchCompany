@@ -14,8 +14,6 @@ namespace TwitchCompany.Patches
         [HarmonyPostfix]
         private static void StartOfRoundPostfix(StartOfRound __instance)
         {
-            HUDManager.Instance.DisplayTip("mod works", "yippee", false);
-
             if(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 TwitchCompany.Logger.LogInfo("Trying to instantiate and spawn networkprefab...");

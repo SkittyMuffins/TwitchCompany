@@ -12,13 +12,13 @@ namespace TwitchCompany.Patches
         [HarmonyPatch(nameof(NetworkManager.SetSingleton))]
         private static void RegisterNetworker()
         {
-            TwitchCompany.coolPrefab = new GameObject("TwitchCompany Networker");
+            TwitchCompany.coolPrefab = new GameObject("TwitchCompanyManager");
             TwitchCompany.coolPrefab.hideFlags |= HideFlags.HideAndDontSave;
             Object.DontDestroyOnLoad(TwitchCompany.coolPrefab);
             var netcomponent = TwitchCompany.coolPrefab.AddComponent<NetworkObject>();
-            TwitchCompany.coolPrefab.AddComponent<NetworkingStuffs>();
+            TwitchCompany.coolPrefab.AddComponent<TwitchCompanyManager>();
             
-            netcomponent.GlobalObjectIdHash = GetHash("TwitchCompany Networker");
+            netcomponent.GlobalObjectIdHash = GetHash("TwitchCompanyManager");
 
             NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(TwitchCompany.coolPrefab);
             return;
