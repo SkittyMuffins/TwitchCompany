@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using System.Linq;
-using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -18,10 +17,8 @@ namespace TwitchCompany.Patches
             Object.DontDestroyOnLoad(TwitchCompany.coolPrefab);
             var netcomponent = TwitchCompany.coolPrefab.AddComponent<NetworkObject>();
             TwitchCompany.coolPrefab.AddComponent<NetworkingStuffs>();
-
-            //janky reflection bullcrap because idk how else to get this to work
-            var fieldInfo = typeof(NetworkObject).GetField("GlobalObjectIdHash", BindingFlags.Instance | BindingFlags.Public);
-            fieldInfo!.SetValue(netcomponent, GetHash(MyPluginInfo.PLUGIN_GUID));
+            
+            netcomponent.GlobalObjectIdHash = GetHash("TwitchCompany Networker");
 
             NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(TwitchCompany.coolPrefab);
             return;

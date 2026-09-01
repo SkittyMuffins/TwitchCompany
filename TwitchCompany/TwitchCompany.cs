@@ -30,7 +30,7 @@ namespace TwitchCompany
 
             InitialiseConfigs();
 
-            NetcodePatcher();
+            
 
             Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
             Harmony.PatchAll();
@@ -38,22 +38,7 @@ namespace TwitchCompany
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
 
-        private void NetcodePatcher()
-        {
-            var types = Assembly.GetExecutingAssembly().GetTypes();
-            foreach (var type in types)
-            {
-                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                foreach (var method in methods)
-                {
-                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-                    if (attributes.Length > 0)
-                    {
-                        method.Invoke(null, null);
-                    }
-                }
-            }
-        }
+       
         private void InitialiseConfigs()
         {
             //Put in config init things here there'll be a lot of those. maybe move into another file in future?

@@ -43,9 +43,13 @@
     <!-- Primary Package References -->
     <ItemGroup>
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="BepInEx.Core" Version="5.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all" />
-        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all" />
+        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all" Publicize="true"/>
         <PackageReference Include="Zehs.TwitchChatAPI" Version="2.0.0" />
     </ItemGroup>
 
