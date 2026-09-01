@@ -12,8 +12,14 @@ namespace TwitchCompany
     {
         private void Awake()
         {
-            API.OnMessage += OnMessageHandler;
-            API.OnRaid += OnRaidHandler;
+            if(ConfigBuilder.EnableChatEvents.Value)
+            {
+                API.OnMessage += OnMessageHandler;
+            }
+            if(ConfigBuilder.EnableRaidEvents.Value)
+            {
+                API.OnRaid += OnRaidHandler;
+            }
         }
 
         private static void OnMessageHandler(TwitchMessage message)
@@ -30,7 +36,12 @@ namespace TwitchCompany
         private static void OnRaidHandler(TwitchRaidEvent raid)
         {
             TwitchCompany.Logger.LogInfo($"Received raid from {raid.User.DisplayName} with {raid.ViewerCount} viewers.");
-            Methods.Tip("INCOMING RAID", $"{raid.User.DisplayName} is raiding with {raid.ViewerCount} viewers!!!", true);
+
+            //send raid alert if enabled
+            if(ConfigBuilder.EnableRaidAlerts.Value)
+            {
+                Methods.Tip("INCOMING RAID", $"{raid.User.DisplayName} is raiding with {raid.ViewerCount} viewers!!!", true);
+            }
         }
 
         private static void EvaluateForBALD(TwitchMessage message)
