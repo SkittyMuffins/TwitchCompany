@@ -16,11 +16,11 @@ namespace TwitchCompany.Patches
         {
             if(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                TwitchCompany.Logger.LogInfo("Trying to instantiate and spawn networkprefab...");
+                TwitchCompany.Logger.LogInfo("Trying to instantiate and spawn TwitchCompany manager...");
 
                 GameObject obj = GameObject.Instantiate(TwitchCompany.coolPrefab, Vector3.zero, Quaternion.identity);
                 obj.GetComponent<NetworkObject>().Spawn(true);
-                TwitchCompany.Logger.LogInfo("Successfully spawned network prefab!");
+                TwitchCompany.Logger.LogInfo("Successfully spawned TwitchCompany manager!");
             }
         }
     }

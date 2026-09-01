@@ -29,6 +29,21 @@ namespace TwitchCompany
         public static ConfigEntry<bool> EnableRaidEvents { get; set; }
         public static ConfigEntry<bool> EnableRaidAlerts { get; set; }
 
+        //Raid hordes
+        public static ConfigEntry<bool> EnableHordeSpawning { get; set; }
+        public static ConfigEntry<int> HordeMaxSize { get; set; }
+        public static ConfigEntry<string> HordeEnemyType { get; set; }
+
+        //Raid supply drops
+        public static ConfigEntry<bool> EnableSupplyDropSpawning { get; set; }
+        public static ConfigEntry<int> SupplyDropMaxSize { get; set; }
+        public static ConfigEntry<ItemDropLocations> SupplyDropLocation { get; set; }
+
+        //Raid treasure drops
+        public static ConfigEntry<bool> EnableTreasureDropSpawning { get; set; }
+        public static ConfigEntry<int> TreasureDropMaxSize { get; set; }
+        public static ConfigEntry<ItemDropLocations> TreasureDropLocation { get; set; }
+
         public static void InitialiseConfig()
         {
             //Chat events
@@ -120,6 +135,79 @@ namespace TwitchCompany
                 true,
                 "If enabled, an alert will be displayed onscreen when your stream is raided."
                 );
+
+            //Horde settings
+            EnableHordeSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Raid Events",
+                "Enable Horde Spawning",
+                true,
+                "If enabled, a horde of enemies will spawn when your stream is raided."
+                );
+
+            HordeMaxSize = TwitchCompany.Instance.Config.Bind<int>(
+                "Raid Events",
+                "Horde Max Size",
+                10,
+                "The maximum number of enemies that can spawn in a horde."
+                );
+
+            HordeEnemyType = TwitchCompany.Instance.Config.Bind<string>(
+                "Raid Events",
+                "Horde Enemy Type",
+                "Masked",
+                "The type of enemy that will spawn in a horde. Must be a valid enemy type."
+                );
+
+            //Supply drop settings
+            EnableSupplyDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Raid Events",
+                "Enable Supply Drop Spawning",
+                true,
+                "If enabled, a supply drop of tools will spawn when your stream is raided."
+                );
+
+            SupplyDropMaxSize = TwitchCompany.Instance.Config.Bind<int>(
+                "Raid Events",
+                "Supply Drop Max Size",
+                5,
+                "The maximum number of tools that can spawn in a supply drop."
+                );
+
+            SupplyDropLocation = TwitchCompany.Instance.Config.Bind<ItemDropLocations>(
+                "Raid Events",
+                "Supply Drop Location",
+                ItemDropLocations.Dropship,
+                "The location where the supply drop will arrive. Can be spawned in the middle of the ship (InShip), on the host player (OnHost) or sent via the Company dropship (Dropship)."
+                );
+
+            //Treasure drop settings
+            EnableTreasureDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Raid Events",
+                "Enable Treasure Drop Spawning",
+                true,
+                "If enabled, a random selection of scrap will spawn when your stream is raided."
+                );
+
+            TreasureDropMaxSize = TwitchCompany.Instance.Config.Bind<int>(
+                "Raid Events",
+                "Treasure Drop Max Size",
+                5,
+                "The maximum number of scrap items that can spawn from a treasure drop."
+                );
+
+            TreasureDropLocation = TwitchCompany.Instance.Config.Bind<ItemDropLocations>(
+                "Raid Events",
+                "Treasure Drop Location",
+                ItemDropLocations.Dropship,
+                "The location where the treasure drop will arrive. Can be spawned in the middle of the ship (InShip), on the host player (OnHost) or sent via the Company dropship (Dropship)."
+                );
+        }
+
+        public enum ItemDropLocations
+        {
+            InShip,
+            OnHost,
+            Dropship
         }
     }
 }
