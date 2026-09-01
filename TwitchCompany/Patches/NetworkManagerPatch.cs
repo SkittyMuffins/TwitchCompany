@@ -10,7 +10,7 @@ namespace TwitchCompany.Patches
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(NetworkManager.SetSingleton))]
-        private static void RegisterNetworker()
+        private static void SetSingletonPostfix()
         {
             TwitchCompany.coolPrefab = new GameObject("TwitchCompanyManager");
             TwitchCompany.coolPrefab.hideFlags |= HideFlags.HideAndDontSave;

@@ -24,9 +24,10 @@
     <!-- Set NuGet Sources -->
     <PropertyGroup>
         <RestoreAdditionalProjectSources>
-            https://api.nuget.org/v3/index.json;
-            https://nuget.bepinex.dev/v3/index.json
-        </RestoreAdditionalProjectSources>
+			https://api.nuget.org/v3/index.json;
+			https://nuget.bepinex.dev/v3/index.json;
+			https://nuget.windows10ce.com/nuget/v3/index.json
+		</RestoreAdditionalProjectSources>
     </PropertyGroup>
 
     <!-- Embed Debug Symbols for Easier Debugging -->
@@ -51,6 +52,7 @@
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all" />
         <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all" Publicize="true"/>
         <PackageReference Include="Zehs.TwitchChatAPI" Version="2.0.0" />
+		<PackageReference Include="IAmBatby-LethalLevelLoader" Version="1.7.*" PrivateAssets="all"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

@@ -10,6 +10,7 @@ namespace TwitchCompany
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency("TwitchChatAPI", BepInDependency.DependencyFlags.HardDependency)] //yes that's the entire guid
+    [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.HardDependency)] //using this to get enemy/scrap lists for easy reference because zeekerss is lame :/
     public class TwitchCompany : BaseUnityPlugin
     {
 
