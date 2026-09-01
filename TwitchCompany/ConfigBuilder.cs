@@ -87,21 +87,21 @@ namespace TwitchCompany
             VIPSCanBALD = TwitchCompany.Instance.Config.Bind<bool>(
                 "Chat Events",
                 "VIPS Can Use BALD Chat",
-                true,
+                false,
                 "If enabled, Twitch VIPs will be able to use BALD chat. Enabling this or any other of the role permissions will disallow chatters with no role from using it."
                 );
 
             SubscribersCanBALD = TwitchCompany.Instance.Config.Bind<bool>(
                 "Chat Events",
                 "Subscribers Can Use BALD Chat",
-                true,
+                false,
                 "If enabled, Twitch subscribers will be able to use BALD chat. Enabling this or any other of the role permissions will disallow chatters with no role from using it."
                 );
 
             ModsCanBALD = TwitchCompany.Instance.Config.Bind<bool>(
                 "Chat Events",
                 "Mods Can Use BALD Chat",
-                true,
+                false,
                 "If enabled, Twitch mods will be able to use BALD chat. Enabling this or any other of the role permissions will disallow chatters with no role from using it."
                 );
 
