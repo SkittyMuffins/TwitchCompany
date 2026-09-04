@@ -9,6 +9,8 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using LethalLevelLoader;
+using GameNetcodeStuff;
+using Random = UnityEngine.Random;
 
 namespace TwitchCompany
 {
@@ -30,12 +32,14 @@ namespace TwitchCompany
             }
         }
 
+        /* Commenting this out - Do I really need this?
         public override void OnNetworkSpawn()
         {
             Instance = this;
             base.OnNetworkSpawn();
             if (IsServer) return;
         }
+        */
 
         /// <summary>
         /// Event responses
@@ -66,7 +70,7 @@ namespace TwitchCompany
             {
                 QueueEnemySpawnOnPlayer(ConfigBuilder.HordeEnemyType.Value,
                     Math.Min(raid.ViewerCount, ConfigBuilder.HordeMaxSize.Value),
-                    StartOfRound.Instance.localPlayerController.playerClientId); //i really hope this gets the host otherwise we may be fucked
+                    StartOfRound.Instance.localPlayerController.actualClientId); //i really hope this gets the host otherwise we may be fucked
             }
 
             //handle supply drop spawning if enabled
@@ -97,10 +101,7 @@ namespace TwitchCompany
 
             if(IsServer && canSpawn && spawnQueue.Count > 0)
             {
-                //insert spawn queue method here
-                //is now a bad time to say i lifted a lot of this code from nightofthelivingmimic
-                //because i lifted a lot of this code from nightofthelivingmimic
-                //i realise that mod doesn't have a license but that's a problem for future me
+                ProcessSpawnQueue();
             }
         }
 
@@ -200,13 +201,16 @@ namespace TwitchCompany
             while (spawnQueue.Count > 0)
             {
                 var (enemyType, count, playerID) = spawnQueue.Dequeue();
-                ExtendedEnemyType type = PatchedContent.ExtendedEnemyTypes.Find(enemy => string.Equals(enemy.EnemyType.enemyName, enemyType, StringComparison.Ordinal));
-                //UNFINISHED. Get player by their ID here
-                if (type != null)
+                ExtendedEnemyType extendedType = PatchedContent.ExtendedEnemyTypes.Find(enemy => string.Equals(enemy.EnemyType.enemyName, enemyType, StringComparison.Ordinal));
+                PlayerControllerB player = Methods.getPlayerByID(playerID);
+                if (extendedType != null)
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        //Actually spawn the enemy
+                        Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0); //i'm using unity random for this PLEASEEEE tell me this is synced
+                        GameObject newEnemy = GameObject.Instantiate(extendedType.EnemyType.enemyPrefab, player.transform.position, rotation);
+                        var net = newEnemy.GetComponentInChildren<NetworkObject>();
+                        net.Spawn(destroyWithScene: true);
                     }
                 }
                 else

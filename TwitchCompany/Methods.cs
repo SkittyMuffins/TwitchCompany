@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameNetcodeStuff;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,5 +37,16 @@ namespace TwitchCompany
             return entries;
         }
 
+        public static PlayerControllerB getPlayerByID(ulong actualclientid)
+        {
+            foreach(PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
+            {
+                if(actualclientid == player.actualClientId)
+                {
+                    return player;
+                }
+            }
+            return null;
+        }
     }
 }
