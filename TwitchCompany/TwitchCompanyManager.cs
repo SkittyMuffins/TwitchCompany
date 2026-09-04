@@ -11,6 +11,7 @@ using UnityEngine.PlayerLoop;
 using LethalLevelLoader;
 using GameNetcodeStuff;
 using Random = UnityEngine.Random;
+using EasyTextEffects.Editor.MyBoxCopy.Extensions;
 
 namespace TwitchCompany
 {
@@ -174,7 +175,7 @@ namespace TwitchCompany
             string hostname;
             try
             {
-                hostname = StartOfRound.Instance?.localPlayerController.playerUsername;
+                hostname = StartOfRound.Instance.localPlayerController.playerUsername;
             }
             catch (Exception ex)
             {
@@ -217,6 +218,53 @@ namespace TwitchCompany
                 {
                     TwitchCompany.Logger.LogError($"Enemy type '{enemyType}' not found in ExtendedEnemyTypes.");
                 }
+            }
+        }
+
+        private static void ItemDrop(bool scrap, ConfigBuilder.ItemDropLocations location)
+        {
+            List<SpawnableItemWithRarity> itemPool;
+
+            if (scrap) //Populate item pool with scrap items
+            {
+                itemPool = StartOfRound.Instance.currentLevel.spawnableScrap;
+                if(itemPool.IsNullOrEmpty()) //in case item drop is called on a moon with no set spawnable scraps
+                {
+                    TwitchCompany.Logger.LogInfo("Current moon has no spawnable scrap. Pulling from LLL ExtendedItems list for treasure drop.");
+                    foreach(ExtendedItem eItem in PatchedContent.ExtendedItems)
+                    {
+                        if(!eItem.IsBuyableItem && eItem.Item.maxValue > 0)
+                        {
+                            itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
+                        }
+                    }
+                }
+            }
+            else //Populate item pool with tools
+            {
+                itemPool = new List<SpawnableItemWithRarity>();
+                foreach (ExtendedItem eItem in PatchedContent.ExtendedItems)
+                {
+                    if (eItem.IsBuyableItem)
+                    {
+                        itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
+                    }
+                }
+            }
+
+            //Do actual spawning logic
+            switch(location)
+            {
+                case ConfigBuilder.ItemDropLocations.InShip:
+                    //figure out where the ship is
+                    break;
+                case ConfigBuilder.ItemDropLocations.OnHost:
+                    Transform where = StartOfRound.Instance.localPlayerController.transform;
+                    Methods.SummonItemsWithRarityAtLocation(itemPool, where);
+                    break;
+                default:
+                    TwitchCompany.Logger.LogError("Invalid item drop location provided. This message should not appear.");
+                    break;
             }
         }
     }

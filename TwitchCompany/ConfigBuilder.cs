@@ -176,8 +176,8 @@ namespace TwitchCompany
             SupplyDropLocation = TwitchCompany.Instance.Config.Bind<ItemDropLocations>(
                 "Raid Events",
                 "Supply Drop Location",
-                ItemDropLocations.Dropship,
-                "The location where the supply drop will arrive. Can be spawned in the middle of the ship (InShip), on the host player (OnHost) or sent via the Company dropship (Dropship)."
+                ItemDropLocations.InShip,
+                "The location where the supply drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
                 );
 
             //Treasure drop settings
@@ -198,16 +198,15 @@ namespace TwitchCompany
             TreasureDropLocation = TwitchCompany.Instance.Config.Bind<ItemDropLocations>(
                 "Raid Events",
                 "Treasure Drop Location",
-                ItemDropLocations.Dropship,
-                "The location where the treasure drop will arrive. Can be spawned in the middle of the ship (InShip), on the host player (OnHost) or sent via the Company dropship (Dropship)."
+                ItemDropLocations.InShip,
+                "The location where the treasure drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
                 );
         }
 
         public enum ItemDropLocations
         {
             InShip,
-            OnHost,
-            Dropship
+            OnHost
         }
     }
 }

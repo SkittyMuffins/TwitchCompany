@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using TwitchChatAPI;
 using TwitchChatAPI.Objects;
+using UnityEngine;
 
 namespace TwitchCompany
 {
@@ -47,6 +48,11 @@ namespace TwitchCompany
                 }
             }
             return null;
+        }
+
+        public static void SummonItemsWithRarityAtLocation(List<SpawnableItemWithRarity> itemPool, Transform location)
+        {
+
         }
     }
 }
