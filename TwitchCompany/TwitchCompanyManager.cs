@@ -55,7 +55,7 @@ namespace TwitchCompany
             }
         }
 
-        private static void OnRaidHandler(TwitchRaidEvent raid)
+        private void OnRaidHandler(TwitchRaidEvent raid)
         {
             TwitchCompany.Logger.LogInfo($"Received raid from {raid.User.DisplayName} with {raid.ViewerCount} viewers.");
 
@@ -68,7 +68,7 @@ namespace TwitchCompany
             //spawn horde if enabled
             if(ConfigBuilder.EnableHordeSpawning.Value)
             {
-                QueueEnemySpawnOnPlayer(ConfigBuilder.HordeEnemyType.Value,
+                QueueEnemySpawnOnPlayerServerRpc(ConfigBuilder.HordeEnemyType.Value,
                     Math.Min(raid.ViewerCount, ConfigBuilder.HordeMaxSize.Value),
                     StartOfRound.Instance.localPlayerController.actualClientId); //i really hope this gets the host otherwise we may be fucked
             }
@@ -191,7 +191,7 @@ namespace TwitchCompany
 
         [ServerRpc(RequireOwnership = false)]
         //Queues the spawning of enemies on players to prevent spawns from occurring in orbit
-        public static void QueueEnemySpawnOnPlayer(string enemyType, int count, ulong playerID)
+        public void QueueEnemySpawnOnPlayerServerRpc(string enemyType, int count, ulong playerID)
         {
             spawnQueue.Enqueue((enemyType, count, playerID));
         }
