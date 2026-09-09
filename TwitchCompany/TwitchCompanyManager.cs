@@ -58,32 +58,33 @@ namespace TwitchCompany
 
         private void OnRaidHandler(TwitchRaidEvent raid)
         {
-            TwitchCompany.Logger.LogInfo($"Received raid from {raid.User.DisplayName} with {raid.ViewerCount} viewers.");
+            int viewers = raid.ViewerCount;
+            TwitchCompany.Logger.LogInfo($"Received raid from {raid.User.DisplayName} with {viewers} viewers.");
 
             //send raid alert if enabled
             if(ConfigBuilder.EnableRaidAlerts.Value)
             {
-                Methods.Tip("INCOMING RAID", $"{raid.User.DisplayName} is raiding with {raid.ViewerCount} viewers!!!", true);
+                Methods.Tip("INCOMING RAID", $"{raid.User.DisplayName} is raiding with {viewers} viewers!!!", true);
             }
 
             //spawn horde if enabled
             if(ConfigBuilder.EnableHordeSpawning.Value)
             {
                 QueueEnemySpawnOnPlayerServerRpc(ConfigBuilder.HordeEnemyType.Value,
-                    Math.Min(raid.ViewerCount, ConfigBuilder.HordeMaxSize.Value),
+                    Math.Min(viewers, ConfigBuilder.HordeMaxSize.Value),
                     StartOfRound.Instance.localPlayerController.actualClientId); //i really hope this gets the host otherwise we may be fucked
             }
 
             //handle supply drop spawning if enabled
             if(ConfigBuilder.EnableSupplyDropSpawning.Value)
             {
-
+                ItemDrop(false, Math.Min(viewers, ConfigBuilder.SupplyDropMaxSize.Value), ConfigBuilder.SupplyDropLocation.Value);
             }
 
             //handle treasure drop spawning if enabled
             if(ConfigBuilder.EnableTreasureDropSpawning.Value)
             {
-
+                ItemDrop(true, Math.Min(viewers, ConfigBuilder.TreasureDropMaxSize.Value), ConfigBuilder.TreasureDropLocation.Value);
             }
         }
 
@@ -221,7 +222,7 @@ namespace TwitchCompany
             }
         }
 
-        private static void ItemDrop(bool scrap, ConfigBuilder.ItemDropLocations location)
+        private static void ItemDrop(bool scrap, int count, ConfigBuilder.ItemDropLocations location)
         {
             List<SpawnableItemWithRarity> itemPool;
 
@@ -253,14 +254,18 @@ namespace TwitchCompany
             }
 
             //Do actual spawning logic
+
+            Transform where;
             switch(location)
             {
                 case ConfigBuilder.ItemDropLocations.InShip:
-                    //figure out where the ship is
+                    where = new Transform();
+                    where.position = StartOfRound.Instance.GetPlayerSpawnPosition(0);
+                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, where, true);
                     break;
                 case ConfigBuilder.ItemDropLocations.OnHost:
-                    Transform where = StartOfRound.Instance.localPlayerController.transform;
-                    Methods.SummonItemsWithRarityAtLocation(itemPool, where);
+                    where = StartOfRound.Instance.localPlayerController.transform;
+                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, where, false);
                     break;
                 default:
                     TwitchCompany.Logger.LogError("Invalid item drop location provided. This message should not appear.");
