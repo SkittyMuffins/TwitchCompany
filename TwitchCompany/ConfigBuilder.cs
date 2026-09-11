@@ -32,20 +32,10 @@ namespace TwitchCompany
         public static ConfigEntry<bool> EnableRaidAlerts { get; set; }
         public static ConfigEntry<bool> RaidAlertsAreErrors { get; set; }
 
-        //Raid hordes
-        public static ConfigEntry<bool> EnableHordeSpawning { get; set; }
-        public static ConfigEntry<int> HordeMaxSize { get; set; }
-        public static ConfigEntry<string> HordeEnemyType { get; set; }
-
-        //Raid supply drops
-        public static ConfigEntry<bool> EnableSupplyDropSpawning { get; set; }
-        public static ConfigEntry<int> SupplyDropMaxSize { get; set; }
-        public static ConfigEntry<ItemDropLocations> SupplyDropLocation { get; set; }
-
-        //Raid treasure drops
-        public static ConfigEntry<bool> EnableTreasureDropSpawning { get; set; }
-        public static ConfigEntry<int> TreasureDropMaxSize { get; set; }
-        public static ConfigEntry<ItemDropLocations> TreasureDropLocation { get; set; }
+        //Hordes, supply drops
+        public static ConfigEntry<bool> EnableRaidHordeSpawning { get; set; }
+        public static ConfigEntry<bool> EnableRaidSupplyDropSpawning { get; set; }
+        public static ConfigEntry<bool> EnableRaidTreasureDropSpawning { get; set; }
 
         /// <summary>
         /// Config entries for things that require cheer handling
@@ -57,6 +47,13 @@ namespace TwitchCompany
         public static ConfigEntry<bool> EnableCheerAlerts { get; set; }
         public static ConfigEntry<bool> CheerAlertsAreErrors { get; set; }
 
+        //Hordes, supply drops
+        public static ConfigEntry<bool> EnableCheerHordeSpawning { get; set; }
+        public static ConfigEntry<int> BitsPerEnemy { get; set; }
+        public static ConfigEntry<bool> EnableCheerSupplyDropSpawning { get; set; }
+        public static ConfigEntry<bool> EnableCheerTreasureDropSpawning { get; set; }
+        public static ConfigEntry<int> BitsPerItem { get; set; }
+
         /// <summary>
         /// Config entries for things that require sub handling
         /// </summary>
@@ -65,6 +62,32 @@ namespace TwitchCompany
         //Sub alerts
         public static ConfigEntry<bool> EnableSubAlerts { get; set; }
         public static ConfigEntry<bool> SubAlertsAreErrors { get; set; }
+
+        //Hordes, supply drops
+        public static ConfigEntry<bool> EnableSubHordeSpawning { get; set; }
+        public static ConfigEntry<int> EnemiesPerSub { get; set; }
+        public static ConfigEntry<bool> EnableSubSupplyDropSpawning { get; set; }
+        public static ConfigEntry<bool> EnableSubTreasureDropSpawning { get; set; }
+        public static ConfigEntry<int> ItemsPerSub { get; set; }
+
+        /// <summary>
+        /// Config entries for horde spawning
+        /// </summary>
+        public static ConfigEntry<int> HordeMaxSize { get; set; }
+        public static ConfigEntry<string> HordeEnemyType { get; set; }
+
+        /// <summary>
+        /// Config entries for supply drops
+        /// </summary>
+        public static ConfigEntry<int> SupplyDropMaxSize { get; set; }
+        public static ConfigEntry<ItemDropLocations> SupplyDropLocation { get; set; }
+
+        /// <summary>
+        /// Config entries for treasure drops
+        /// </summary>
+        public static ConfigEntry<int> TreasureDropMaxSize { get; set; }
+        public static ConfigEntry<ItemDropLocations> TreasureDropLocation { get; set; }
+
 
         public static void InitialiseConfig()
         {
@@ -165,72 +188,25 @@ namespace TwitchCompany
                 "If true, raid alerts will come in with the red warning pop up rather than the yellow one. True by default because I think for raids it's cooler that way"
                 );
 
-
-
-            //Horde settings
-            EnableHordeSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+            EnableRaidHordeSpawning = TwitchCompany.Instance.Config.Bind<bool>(
                 "Raid Events",
-                "Enable Horde Spawning",
+                "Enable Horde Spawning for Raids",
                 true,
                 "If enabled, a horde of enemies will spawn when your stream is raided."
                 );
 
-            HordeMaxSize = TwitchCompany.Instance.Config.Bind<int>(
+            EnableRaidSupplyDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
                 "Raid Events",
-                "Horde Max Size",
-                10,
-                "The maximum number of enemies that can spawn in a horde."
-                );
-
-            HordeEnemyType = TwitchCompany.Instance.Config.Bind<string>(
-                "Raid Events",
-                "Horde Enemy Type",
-                "Masked",
-                "The type of enemy that will spawn in a horde. Must be a valid enemy type."
-                );
-
-            //Supply drop settings
-            EnableSupplyDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
-                "Raid Events",
-                "Enable Supply Drop Spawning",
+                "Enable Supply Drop Spawning for Raids",
                 true,
                 "If enabled, a supply drop of tools will spawn when your stream is raided."
                 );
 
-            SupplyDropMaxSize = TwitchCompany.Instance.Config.Bind<int>(
+            EnableRaidTreasureDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
                 "Raid Events",
-                "Supply Drop Max Size",
-                5,
-                "The maximum number of tools that can spawn in a supply drop."
-                );
-
-            SupplyDropLocation = TwitchCompany.Instance.Config.Bind<ItemDropLocations>(
-                "Raid Events",
-                "Supply Drop Location",
-                ItemDropLocations.InShip,
-                "The location where the supply drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
-                );
-
-            //Treasure drop settings
-            EnableTreasureDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
-                "Raid Events",
-                "Enable Treasure Drop Spawning",
+                "Enable Treasure Drop Spawning for Raids",
                 true,
                 "If enabled, a random selection of scrap will spawn when your stream is raided."
-                );
-
-            TreasureDropMaxSize = TwitchCompany.Instance.Config.Bind<int>(
-                "Raid Events",
-                "Treasure Drop Max Size",
-                5,
-                "The maximum number of scrap items that can spawn from a treasure drop."
-                );
-
-            TreasureDropLocation = TwitchCompany.Instance.Config.Bind<ItemDropLocations>(
-                "Raid Events",
-                "Treasure Drop Location",
-                ItemDropLocations.InShip,
-                "The location where the treasure drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
                 );
 
             //Cheer events
@@ -262,6 +238,41 @@ namespace TwitchCompany
                 "If true, cheer alerts will come in with the red warning pop up rather than the yellow one."
                 );
 
+            EnableCheerHordeSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Cheer Events",
+                "Enable Horde Spawning for Cheering",
+                false,
+                "If enabled, a horde of enemies will spawn on you when someone cheers with bits."
+                );
+
+            BitsPerEnemy = TwitchCompany.Instance.Config.Bind<int>(
+                "Cheer Events",
+                "Bits per Enemy",
+                1,
+                "Determines the number of bits required to spawn one enemy in a horde when cheering."
+                );
+
+            EnableCheerSupplyDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Cheer Events",
+                "Enable Supply Drop Spawning for Cheering",
+                true,
+                "If enabled, a supply drop of tools will spawn when someone cheers."
+                );
+
+            EnableCheerTreasureDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Cheer Events",
+                "Enable Treasure Drop Spawning for Cheering",
+                true,
+                "If enabled, a random selection of scrap will spawn when someone cheers."
+                );
+
+            BitsPerItem = TwitchCompany.Instance.Config.Bind<int>(
+                "Cheer Events",
+                "Bits per Item",
+                1,
+                "Determines the number of bits required to spawn one tool or scrap in a supply/treasure drop."
+                );
+
             //Subscription events
             EnableSubscriptionEvents = TwitchCompany.Instance.Config.Bind<bool>(
                 "Subscription Events",
@@ -282,6 +293,86 @@ namespace TwitchCompany
                 "Subscription Alerts are Errors",
                 false,
                 "If true, subscription alerts will come in with the red warning pop up rather than the yellow one."
+                );
+
+            EnableSubHordeSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Subscription Events",
+                "Enable Horde Spawning for Subs",
+                true,
+                "If enabled, a horde of enemies will spawn when someone subscribes to or gifts subs for your channel."
+                );
+
+            EnemiesPerSub = TwitchCompany.Instance.Config.Bind<int>(
+                "Subscription Events",
+                "Enemies Per Subscription",
+                5,
+                "The number of enemies spawned for every subscription."
+                );
+
+            EnableSubSupplyDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Subscription Events",
+                "Enable Supply Drop Spawning for Subs",
+                false,
+                "If enabled, a supply drop of tools will spawn when someone subscribes to or gifts subs for your channel."
+                );
+
+            EnableSubTreasureDropSpawning = TwitchCompany.Instance.Config.Bind<bool>(
+                "Subscription Events",
+                "Enable Treasure Drop Spawning for Subs",
+                false,
+                "If enabled, a random selection of scrap will spawn when someone subscribes to or gifts subs for your channel."
+                );
+
+            ItemsPerSub = TwitchCompany.Instance.Config.Bind<int>(
+                "Subscription Events",
+                "Items Per Subscription",
+                5,
+                "The number of items spawned by supply/treasure drops for every subscription."
+                );
+
+            //Horde settings
+            HordeMaxSize = TwitchCompany.Instance.Config.Bind<int>(
+                "Horde Settings",
+                "Horde Max Size",
+                10,
+                "The maximum number of enemies that can spawn in a horde."
+                );
+
+            HordeEnemyType = TwitchCompany.Instance.Config.Bind<string>(
+                "Horde Settings",
+                "Horde Enemy Type",
+                "Masked",
+                "The type of enemy that will spawn in a horde. Must be a valid enemy type."
+                );
+
+            //Supply drop settings
+            SupplyDropMaxSize = TwitchCompany.Instance.Config.Bind<int>(
+                "Supply Drops",
+                "Supply Drop Max Size",
+                10,
+                "The maximum number of tools that can spawn in a supply drop."
+                );
+
+            SupplyDropLocation = TwitchCompany.Instance.Config.Bind<ItemDropLocations>(
+                "Supply Drops",
+                "Supply Drop Location",
+                ItemDropLocations.InShip,
+                "The location where the supply drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
+                );
+
+            //Treasure drop settings
+            TreasureDropMaxSize = TwitchCompany.Instance.Config.Bind<int>(
+                "Treasure Drops",
+                "Treasure Drop Max Size",
+                10,
+                "The maximum number of scrap items that can spawn from a treasure drop."
+                );
+
+            TreasureDropLocation = TwitchCompany.Instance.Config.Bind<ItemDropLocations>(
+                "Treasure Drops",
+                "Treasure Drop Location",
+                ItemDropLocations.InShip,
+                "The location where the treasure drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
                 );
         }
 

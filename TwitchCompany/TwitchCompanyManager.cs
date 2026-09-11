@@ -77,7 +77,7 @@ namespace TwitchCompany
             }
 
             //spawn horde if enabled
-            if(ConfigBuilder.EnableHordeSpawning.Value)
+            if(ConfigBuilder.EnableRaidHordeSpawning.Value)
             {
                 QueueEnemySpawnOnPlayerServerRpc(ConfigBuilder.HordeEnemyType.Value,
                     Math.Min(viewers, ConfigBuilder.HordeMaxSize.Value),
@@ -85,13 +85,13 @@ namespace TwitchCompany
             }
 
             //handle supply drop spawning if enabled
-            if(ConfigBuilder.EnableSupplyDropSpawning.Value)
+            if(ConfigBuilder.EnableRaidSupplyDropSpawning.Value)
             {
                 ItemDrop(false, Math.Min(viewers, ConfigBuilder.SupplyDropMaxSize.Value), ConfigBuilder.SupplyDropLocation.Value);
             }
 
             //handle treasure drop spawning if enabled
-            if(ConfigBuilder.EnableTreasureDropSpawning.Value)
+            if(ConfigBuilder.EnableRaidTreasureDropSpawning.Value)
             {
                 ItemDrop(true, Math.Min(viewers, ConfigBuilder.TreasureDropMaxSize.Value), ConfigBuilder.TreasureDropLocation.Value);
             }
@@ -106,6 +106,26 @@ namespace TwitchCompany
                 {
                     if(cheer.Message.IsNullOrEmpty()) Methods.Tip($"Received {cheer.CheerAmount} bits!", "Thank you!", ConfigBuilder.CheerAlertsAreErrors.Value);
                     else Methods.Tip($"Received {cheer.CheerAmount} bits!", $"{cheer.User}: {cheer.Message}", ConfigBuilder.CheerAlertsAreErrors.Value);
+                }
+
+                if(ConfigBuilder.EnableCheerHordeSpawning.Value && ConfigBuilder.BitsPerEnemy.Value >= cheer.CheerAmount)
+                {
+                    int count = Math.Min((cheer.CheerAmount / ConfigBuilder.BitsPerEnemy.Value), ConfigBuilder.HordeMaxSize.Value); //this SHOULD round it properly. i hope
+                    QueueEnemySpawnOnPlayerServerRpc(ConfigBuilder.HordeEnemyType.Value, count, StartOfRound.Instance.localPlayerController.actualClientId);
+                }
+
+                if(ConfigBuilder.BitsPerItem.Value >= cheer.CheerAmount)
+                {
+                    int itemCount = cheer.CheerAmount / ConfigBuilder.BitsPerItem.Value;
+                    if (ConfigBuilder.EnableCheerSupplyDropSpawning.Value)
+                    {
+                        ItemDrop(false, Math.Min(itemCount,ConfigBuilder.SupplyDropMaxSize.Value), ConfigBuilder.SupplyDropLocation.Value);
+                    }
+
+                    if (ConfigBuilder.EnableCheerTreasureDropSpawning.Value)
+                    {
+                        ItemDrop(true, Math.Min(itemCount, ConfigBuilder.TreasureDropMaxSize.Value), ConfigBuilder.TreasureDropLocation.Value);
+                    }
                 }
             }
         }
@@ -128,6 +148,60 @@ namespace TwitchCompany
                     case SubType.SubMysteryGift:
                         Methods.Tip($"Someone just gifted {sub.GiftCount} subs!", "Thank you!", ConfigBuilder.SubAlertsAreErrors.Value);
                         break;
+                }
+            }
+
+            if (ConfigBuilder.EnableSubHordeSpawning.Value)
+            {
+                if (sub.GiftCount >= 1) //I am unsure if non-gift subs set this value so I do this just in case a 0 gets passed in here
+                {
+                    QueueEnemySpawnOnPlayerServerRpc(ConfigBuilder.HordeEnemyType.Value,
+                        Math.Min((ConfigBuilder.EnemiesPerSub.Value * sub.GiftCount), ConfigBuilder.HordeMaxSize.Value),
+                        StartOfRound.Instance.localPlayerController.actualClientId
+                        );
+                }
+                else
+                {
+                    QueueEnemySpawnOnPlayerServerRpc(ConfigBuilder.HordeEnemyType.Value,
+                        Math.Min(ConfigBuilder.EnemiesPerSub.Value, ConfigBuilder.HordeMaxSize.Value),
+                        StartOfRound.Instance.localPlayerController.actualClientId
+                        );
+                }
+            }
+
+            if(ConfigBuilder.EnableSubSupplyDropSpawning.Value)
+            {
+                if (sub.GiftCount >= 1)
+                {
+                    ItemDrop(false,
+                        Math.Min((ConfigBuilder.ItemsPerSub.Value * sub.GiftCount), ConfigBuilder.SupplyDropMaxSize.Value),
+                        ConfigBuilder.SupplyDropLocation.Value
+                        );
+                }
+                else
+                {
+                    ItemDrop(false,
+                        Math.Min(ConfigBuilder.ItemsPerSub.Value, ConfigBuilder.SupplyDropMaxSize.Value),
+                        ConfigBuilder.SupplyDropLocation.Value
+                        );
+                }
+            }
+
+            if(ConfigBuilder.EnableSubTreasureDropSpawning.Value)
+            {
+                if (sub.GiftCount >= 1)
+                {
+                    ItemDrop(true,
+                        Math.Min((ConfigBuilder.ItemsPerSub.Value * sub.GiftCount), ConfigBuilder.TreasureDropMaxSize.Value),
+                        ConfigBuilder.TreasureDropLocation.Value
+                        );
+                }
+                else
+                {
+                    ItemDrop(true,
+                        Math.Min(ConfigBuilder.ItemsPerSub.Value, ConfigBuilder.TreasureDropMaxSize.Value),
+                        ConfigBuilder.TreasureDropLocation.Value
+                        );
                 }
             }
         }
