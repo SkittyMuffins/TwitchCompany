@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using TwitchChatAPI;
 using TwitchChatAPI.Objects;
+using TwitchChatAPI.Enums;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -31,6 +32,14 @@ namespace TwitchCompany
             {
                 API.OnRaid += OnRaidHandler;
             }
+            if(ConfigBuilder.EnableCheerEvents.Value)
+            {
+                API.OnCheer += OnCheerHandler;
+            }
+            if(ConfigBuilder.EnableSubscriptionEvents.Value)
+            {
+                API.OnSub += OnSubHandler;
+            }
         }
 
         /* Commenting this out - Do I really need this?
@@ -45,7 +54,7 @@ namespace TwitchCompany
         /// <summary>
         /// Event responses
         /// </summary>
-        private static void OnMessageHandler(TwitchMessage message)
+        private void OnMessageHandler(TwitchMessage message)
         {
             TwitchCompany.Logger.LogInfo($"Received message from {message.User.DisplayName}: {message.Message}");
 
@@ -64,7 +73,7 @@ namespace TwitchCompany
             //send raid alert if enabled
             if(ConfigBuilder.EnableRaidAlerts.Value)
             {
-                Methods.Tip("INCOMING RAID", $"{raid.User.DisplayName} is raiding with {viewers} viewers!!!", true);
+                Methods.Tip("INCOMING RAID", $"{raid.User.DisplayName} is raiding with {viewers} viewers!!!", ConfigBuilder.RaidAlertsAreErrors.Value);
             }
 
             //spawn horde if enabled
@@ -85,6 +94,41 @@ namespace TwitchCompany
             if(ConfigBuilder.EnableTreasureDropSpawning.Value)
             {
                 ItemDrop(true, Math.Min(viewers, ConfigBuilder.TreasureDropMaxSize.Value), ConfigBuilder.TreasureDropLocation.Value);
+            }
+        }
+
+        private void OnCheerHandler(TwitchCheerEvent cheer)
+        {
+            if(cheer.CheerAmount < ConfigBuilder.MinimumBitAmount.Value) //check minimum bit amount before doing anything
+            {
+                //Actual stuff
+                if(ConfigBuilder.EnableCheerAlerts.Value)
+                {
+                    if(cheer.Message.IsNullOrEmpty()) Methods.Tip($"Received {cheer.CheerAmount} bits!", "Thank you!", ConfigBuilder.CheerAlertsAreErrors.Value);
+                    else Methods.Tip($"Received {cheer.CheerAmount} bits!", $"{cheer.User}: {cheer.Message}", ConfigBuilder.CheerAlertsAreErrors.Value);
+                }
+            }
+        }
+
+        private void OnSubHandler(TwitchSubEvent sub)
+        {
+            if(ConfigBuilder.EnableSubAlerts.Value)
+            {
+                switch(sub.Type)
+                {
+                    case SubType.Sub:
+                        Methods.Tip($"{sub.User} just subscribed!", $"{sub.User}: {sub.Message}", ConfigBuilder.SubAlertsAreErrors.Value);
+                        break;
+                    case SubType.Resub:
+                        Methods.Tip($"{sub.User} just subscribed for {sub.CumulativeMonths} months!", $"{sub.User}: {sub.Message}", ConfigBuilder.SubAlertsAreErrors.Value);
+                        break;
+                    case SubType.SubGift:
+                        Methods.Tip($"{sub.User} just gifted {sub.GiftCount} subs!", "Thank you!", ConfigBuilder.SubAlertsAreErrors.Value);
+                        break;
+                    case SubType.SubMysteryGift:
+                        Methods.Tip($"Someone just gifted {sub.GiftCount} subs!", "Thank you!", ConfigBuilder.SubAlertsAreErrors.Value);
+                        break;
+                }
             }
         }
 

@@ -27,7 +27,10 @@ namespace TwitchCompany
         /// Config entries for things that require raid handling
         /// </summary>
         public static ConfigEntry<bool> EnableRaidEvents { get; set; }
+
+        //Raid alerts
         public static ConfigEntry<bool> EnableRaidAlerts { get; set; }
+        public static ConfigEntry<bool> RaidAlertsAreErrors { get; set; }
 
         //Raid hordes
         public static ConfigEntry<bool> EnableHordeSpawning { get; set; }
@@ -43,6 +46,25 @@ namespace TwitchCompany
         public static ConfigEntry<bool> EnableTreasureDropSpawning { get; set; }
         public static ConfigEntry<int> TreasureDropMaxSize { get; set; }
         public static ConfigEntry<ItemDropLocations> TreasureDropLocation { get; set; }
+
+        /// <summary>
+        /// Config entries for things that require cheer handling
+        /// </summary>
+        public static ConfigEntry<bool> EnableCheerEvents { get; set; }
+        public static ConfigEntry<int> MinimumBitAmount { get; set; }
+
+        //Cheer alerts
+        public static ConfigEntry<bool> EnableCheerAlerts { get; set; }
+        public static ConfigEntry<bool> CheerAlertsAreErrors { get; set; }
+
+        /// <summary>
+        /// Config entries for things that require sub handling
+        /// </summary>
+        public static ConfigEntry<bool> EnableSubscriptionEvents { get; set; }
+
+        //Sub alerts
+        public static ConfigEntry<bool> EnableSubAlerts { get; set; }
+        public static ConfigEntry<bool> SubAlertsAreErrors { get; set; }
 
         public static void InitialiseConfig()
         {
@@ -136,6 +158,15 @@ namespace TwitchCompany
                 "If enabled, an alert will be displayed onscreen when your stream is raided."
                 );
 
+            RaidAlertsAreErrors = TwitchCompany.Instance.Config.Bind<bool>(
+                "Raid Events",
+                "Raid Alerts are Errors",
+                true,
+                "If true, raid alerts will come in with the red warning pop up rather than the yellow one. True by default because I think for raids it's cooler that way"
+                );
+
+
+
             //Horde settings
             EnableHordeSpawning = TwitchCompany.Instance.Config.Bind<bool>(
                 "Raid Events",
@@ -200,6 +231,57 @@ namespace TwitchCompany
                 "Treasure Drop Location",
                 ItemDropLocations.InShip,
                 "The location where the treasure drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
+                );
+
+            //Cheer events
+            EnableCheerEvents = TwitchCompany.Instance.Config.Bind<bool>(
+                "Cheer Events",
+                "Enable Cheer Events",
+                true,
+                "If enabled, TwitchCompany will listen for when chatters cheer with bits."
+                );
+
+            MinimumBitAmount = TwitchCompany.Instance.Config.Bind<int>(
+                "Cheer Events",
+                "Minimum Bit Amount",
+                1,
+                "The minimum amount of bits required for a bit-related event to fire. Probably increase this if you're a bigger streamer."
+                );
+
+            EnableCheerAlerts = TwitchCompany.Instance.Config.Bind<bool>(
+                "Cheer Events",
+                "Enable Cheer Alerts",
+                true,
+                "If enabled, an alert will be displayed onscreen when someone cheers bits."
+                );
+
+            CheerAlertsAreErrors = TwitchCompany.Instance.Config.Bind<bool>(
+                "Cheer Events",
+                "Cheer Alerts are Errors",
+                false,
+                "If true, cheer alerts will come in with the red warning pop up rather than the yellow one."
+                );
+
+            //Subscription events
+            EnableSubscriptionEvents = TwitchCompany.Instance.Config.Bind<bool>(
+                "Subscription Events",
+                "Enable Subscription events",
+                true,
+                "If enabled, TwitchCompany will listen for when people subscribe to your channel."
+                );
+
+            EnableSubAlerts = TwitchCompany.Instance.Config.Bind<bool>(
+                "Subscription Events",
+                "Enable Subscription Alerts",
+                true,
+                "If enabled, an alert will be displayed onscreen when someone subscribes or gifts subs."
+                );
+
+            SubAlertsAreErrors = TwitchCompany.Instance.Config.Bind<bool>(
+                "Subscription Events",
+                "Subscription Alerts are Errors",
+                false,
+                "If true, subscription alerts will come in with the red warning pop up rather than the yellow one."
                 );
         }
 
