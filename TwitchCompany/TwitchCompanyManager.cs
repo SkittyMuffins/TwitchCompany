@@ -342,6 +342,7 @@ namespace TwitchCompany
 
         private static void ItemDrop(bool scrap, int count, ConfigBuilder.ItemDropLocations location)
         {
+            TwitchCompany.Logger.LogInfo($"Item drop called - spawning {count} items. Scrap: {scrap}");
             List<SpawnableItemWithRarity> itemPool;
 
             if (scrap) //Populate item pool with scrap items
@@ -364,7 +365,7 @@ namespace TwitchCompany
                 itemPool = new List<SpawnableItemWithRarity>();
                 foreach (ExtendedItem eItem in PatchedContent.ExtendedItems)
                 {
-                    if (eItem.IsBuyableItem)
+                    if (!eItem.Item.isScrap) //apparently IsBuyableItem is misinfo, thanks paco for telling me this
                     {
                         itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
                     }
@@ -373,17 +374,19 @@ namespace TwitchCompany
 
             //Do actual spawning logic
 
-            Transform where;
+            //TODO this is busted and making/setting transform like it used to be throws a nullref FIX IT
+            Vector3 position;
             switch(location)
             {
                 case ConfigBuilder.ItemDropLocations.InShip:
-                    where = new Transform();
-                    where.position = StartOfRound.Instance.GetPlayerSpawnPosition(0);
-                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, where, true);
+                    TwitchCompany.Logger.LogInfo("Trying to spawn items in ship");
+                    position = StartOfRound.Instance.middleOfShipNode.position;
+                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, position, true);
                     break;
                 case ConfigBuilder.ItemDropLocations.OnHost:
-                    where = StartOfRound.Instance.localPlayerController.transform;
-                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, where, false);
+                    TwitchCompany.Logger.LogInfo("Trying to spawn items on streamer");
+                    position = StartOfRound.Instance.localPlayerController.transform.position;
+                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, position, false);
                     break;
                 default:
                     TwitchCompany.Logger.LogError("Invalid item drop location provided. This message should not appear.");

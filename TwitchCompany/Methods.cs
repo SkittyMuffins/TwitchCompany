@@ -9,6 +9,7 @@ using TwitchChatAPI.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 namespace TwitchCompany
 {
@@ -53,7 +54,7 @@ namespace TwitchCompany
             return null;
         }
 
-        public static void SummonItemsWithRarityAtLocation(List<SpawnableItemWithRarity> itemPool, int count, Transform location, bool parentToShip)
+        public static void SummonItemsWithRarityAtLocation(List<SpawnableItemWithRarity> itemPool, int count, Vector3 pos, bool parentToShip)
         {
             GameObject? ship = null;
             if(parentToShip)
@@ -76,7 +77,8 @@ namespace TwitchCompany
             Item selectedItem = WeightedRandom<Item>(items, weights);
             for(int i = 0; i<count; i++)
             {
-                GameObject spawnedItem = GameObject.Instantiate(selectedItem.spawnPrefab, location);
+                Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                GameObject spawnedItem = GameObject.Instantiate(selectedItem.spawnPrefab, pos, rotation);
                 NetworkObject netObj = spawnedItem.GetComponentInChildren<NetworkObject>();
                 netObj.Spawn();
                 if(ship is not null)
@@ -97,7 +99,7 @@ namespace TwitchCompany
                 totalWeight = totalWeight + weight;
             }
 
-            int selectedWeight = UnityEngine.Random.RandomRangeInt(1, totalWeight+1);
+            int selectedWeight = Random.RandomRangeInt(0, totalWeight+1);
             int iteratedWeight = 0;
 
             for(int i = 0; i<items.Length; i++)
