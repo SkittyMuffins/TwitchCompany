@@ -81,12 +81,14 @@ namespace TwitchCompany
         /// </summary>
         public static ConfigEntry<int> SupplyDropMaxSize { get; set; }
         public static ConfigEntry<ItemDropLocations> SupplyDropLocation { get; set; }
+        public static ConfigEntry<string> SupplyDropBlacklist { get; set; }
 
         /// <summary>
         /// Config entries for treasure drops
         /// </summary>
         public static ConfigEntry<int> TreasureDropMaxSize { get; set; }
         public static ConfigEntry<ItemDropLocations> TreasureDropLocation { get; set; }
+        public static ConfigEntry<string> TreasureDropBlacklist { get; set; }
 
 
         public static void InitialiseConfig()
@@ -360,6 +362,13 @@ namespace TwitchCompany
                 "The location where the supply drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
                 );
 
+            SupplyDropBlacklist = TwitchCompany.Instance.Config.Bind<string>(
+                "Supply Drops",
+                "Supply Drop Blacklist",
+                "Mapper,Binoculars",
+                "A comma-seperated list of items that can't spawn from supply drops."
+                );
+
             //Treasure drop settings
             TreasureDropMaxSize = TwitchCompany.Instance.Config.Bind<int>(
                 "Treasure Drops",
@@ -373,6 +382,13 @@ namespace TwitchCompany
                 "Treasure Drop Location",
                 ItemDropLocations.InShip,
                 "The location where the treasure drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
+                );
+
+            TreasureDropBlacklist = TwitchCompany.Instance.Config.Bind<string>(
+                "Treasure Drops",
+                "Treasure Drop Blacklist",
+                "Mapper,Binoculars",
+                "A comma-seperated list of items that can't spawn from treasure drops."
                 );
         }
 

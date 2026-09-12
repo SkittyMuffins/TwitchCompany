@@ -13,6 +13,7 @@ using LethalLevelLoader;
 using GameNetcodeStuff;
 using Random = UnityEngine.Random;
 using EasyTextEffects.Editor.MyBoxCopy.Extensions;
+using System.Linq;
 
 namespace TwitchCompany
 {
@@ -353,7 +354,7 @@ namespace TwitchCompany
                     TwitchCompany.Logger.LogInfo("Current moon has no spawnable scrap. Pulling from LLL ExtendedItems list for treasure drop.");
                     foreach(ExtendedItem eItem in PatchedContent.ExtendedItems)
                     {
-                        if(!eItem.IsBuyableItem && eItem.Item.maxValue > 0)
+                        if(eItem.Item.isScrap && eItem.Item.maxValue > 0 && TwitchCompany.TreasureDropBlacklistArray.Contains<string>(eItem.Item.itemName))
                         {
                             itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
                         }
@@ -365,7 +366,7 @@ namespace TwitchCompany
                 itemPool = new List<SpawnableItemWithRarity>();
                 foreach (ExtendedItem eItem in PatchedContent.ExtendedItems)
                 {
-                    if (!eItem.Item.isScrap) //apparently IsBuyableItem is misinfo, thanks paco for telling me this
+                    if (!eItem.Item.isScrap && TwitchCompany.SupplyDropBlacklistArray.Contains<string>(eItem.Item.itemName)) //apparently IsBuyableItem is misinfo, thanks paco for telling me this
                     {
                         itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
                     }
