@@ -19,11 +19,7 @@ namespace TwitchCompany
         internal new static ManualLogSource Logger { get; private set; } = null!;
         internal static Harmony? Harmony { get; set; }
 
-        //Config entries below
-
-        //Other important things for the mod to create
-        public static GameObject coolPrefab;
-
+        //Config entry things
         public static string[] BALDWhitelistArray;
         public static string[] BALDBlacklistArray;
         public static string[] SupplyDropBlacklistArray;
