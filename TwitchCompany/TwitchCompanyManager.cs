@@ -25,6 +25,7 @@ namespace TwitchCompany
 
         private void Awake()
         {
+            TwitchCompany.Logger.LogInfo("TwitchCompanyManager instantiated successfully!");
             if(ConfigBuilder.EnableChatEvents.Value)
             {
                 API.OnMessage += OnMessageHandler;
