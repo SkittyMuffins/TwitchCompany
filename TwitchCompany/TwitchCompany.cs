@@ -20,7 +20,7 @@ namespace TwitchCompany
         internal static Harmony? Harmony { get; set; }
 
         //fml i should've kept this here
-        public static GameObject coolPrefab = new GameObject("TwitchCompanyManager");
+        public static GameObject coolPrefab;
 
         //Config entry things
         public static string[] BALDWhitelistArray;
