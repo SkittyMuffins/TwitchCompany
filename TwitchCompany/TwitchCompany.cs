@@ -19,6 +19,9 @@ namespace TwitchCompany
         internal new static ManualLogSource Logger { get; private set; } = null!;
         internal static Harmony? Harmony { get; set; }
 
+        //fml i should've kept this here
+        public static GameObject coolPrefab = new GameObject("TwitchCompanyManager");
+
         //Config entry things
         public static string[] BALDWhitelistArray;
         public static string[] BALDBlacklistArray;

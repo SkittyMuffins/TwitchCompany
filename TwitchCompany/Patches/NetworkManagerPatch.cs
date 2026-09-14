@@ -12,15 +12,14 @@ namespace TwitchCompany.Patches
         [HarmonyPatch(nameof(NetworkManager.SetSingleton))]
         private static void SetSingletonPostfix()
         {
-            GameObject coolPrefab = new GameObject("TwitchCompanyManager");
-            coolPrefab.hideFlags |= HideFlags.HideAndDontSave;
-            Object.DontDestroyOnLoad(coolPrefab);
-            var netcomponent = coolPrefab.AddComponent<NetworkObject>();
-            coolPrefab.AddComponent<TwitchCompanyManager>();
+            TwitchCompany.coolPrefab.hideFlags |= HideFlags.HideAndDontSave;
+            Object.DontDestroyOnLoad(TwitchCompany.coolPrefab);
+            var netcomponent = TwitchCompany.coolPrefab.AddComponent<NetworkObject>();
+            TwitchCompany.coolPrefab.AddComponent<TwitchCompanyManager>();
             
             netcomponent.GlobalObjectIdHash = GetHash("TwitchCompanyManager");
 
-            NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(coolPrefab);
+            NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(TwitchCompany.coolPrefab);
             return;
 
             static uint GetHash(string value)
