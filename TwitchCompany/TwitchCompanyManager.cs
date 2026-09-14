@@ -19,45 +19,38 @@ namespace TwitchCompany
 {
     internal class TwitchCompanyManager : NetworkBehaviour
     {
-        public static TwitchCompanyManager Instance { get; private set; }
         private static Queue<(string enemyType, int count, ulong playerID)> spawnQueue = new Queue<(string enemyType, int count, ulong playerID)>();
         private static bool canSpawn = false;
 
         private void Awake()
         {
+            //can prob clear this later
             TwitchCompany.Logger.LogInfo("TwitchCompanyManager instantiated successfully!");
-            if(ConfigBuilder.EnableChatEvents.Value)
-            {
-                API.OnMessage += OnMessageHandler;
-            }
-            if(ConfigBuilder.EnableRaidEvents.Value)
-            {
-                API.OnRaid += OnRaidHandler;
-            }
-            if(ConfigBuilder.EnableCheerEvents.Value)
-            {
-                API.OnCheer += OnCheerHandler;
-            }
-            if(ConfigBuilder.EnableSubscriptionEvents.Value)
-            {
-                API.OnSub += OnSubHandler;
-            }
         }
 
-        /* Commenting this out - Do I really need this?
-        public override void OnNetworkSpawn()
+        //suggested by john "crit" twitchchatapi himself - apparently good to prevent memory leaks + let lethalconfig do some things
+        private void OnEnable()
         {
-            Instance = this;
-            base.OnNetworkSpawn();
-            if (IsServer) return;
+            API.OnMessage += OnMessageHandler;
+            API.OnRaid += OnRaidHandler;
+            API.OnCheer += OnCheerHandler;
+            API.OnSub += OnSubHandler;
         }
-        */
+        private void OnDisable()
+        {
+            API.OnMessage -= OnMessageHandler;
+            API.OnRaid -= OnRaidHandler;
+            API.OnCheer -= OnCheerHandler;
+            API.OnSub -= OnSubHandler;
+        }
 
         /// <summary>
         /// Event responses
         /// </summary>
         private void OnMessageHandler(TwitchMessage message)
         {
+            if (!ConfigBuilder.EnableChatEvents.Value) return;
+
             TwitchCompany.Logger.LogInfo($"Received message from {message.User.DisplayName}: {message.Message}");
 
             //check for BALD chats
@@ -69,6 +62,8 @@ namespace TwitchCompany
 
         private void OnRaidHandler(TwitchRaidEvent raid)
         {
+            if (!ConfigBuilder.EnableRaidEvents.Value) return;
+
             int viewers = raid.ViewerCount;
             TwitchCompany.Logger.LogInfo($"Received raid from {raid.User.DisplayName} with {viewers} viewers.");
 
@@ -101,7 +96,9 @@ namespace TwitchCompany
 
         private void OnCheerHandler(TwitchCheerEvent cheer)
         {
-            if(cheer.CheerAmount < ConfigBuilder.MinimumBitAmount.Value) //check minimum bit amount before doing anything
+            if (!ConfigBuilder.EnableCheerEvents.Value) return;
+
+            if (cheer.CheerAmount < ConfigBuilder.MinimumBitAmount.Value) //check minimum bit amount before doing anything
             {
                 //Actual stuff
                 if(ConfigBuilder.EnableCheerAlerts.Value)
@@ -134,7 +131,9 @@ namespace TwitchCompany
 
         private void OnSubHandler(TwitchSubEvent sub)
         {
-            if(ConfigBuilder.EnableSubAlerts.Value)
+            if (!ConfigBuilder.EnableSubscriptionEvents.Value) return;
+
+            if (ConfigBuilder.EnableSubAlerts.Value)
             {
                 switch(sub.Type)
                 {
