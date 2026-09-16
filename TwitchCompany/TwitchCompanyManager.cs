@@ -354,7 +354,7 @@ namespace TwitchCompany
                     TwitchCompany.Logger.LogInfo("Current moon has no spawnable scrap. Pulling from LLL ExtendedItems list for treasure drop.");
                     foreach(ExtendedItem eItem in PatchedContent.ExtendedItems)
                     {
-                        if(eItem.Item.isScrap && eItem.Item.maxValue > 0 && TwitchCompany.TreasureDropBlacklistArray.Contains<string>(eItem.Item.itemName))
+                        if(eItem.Item.isScrap && eItem.Item.maxValue > 0 && !TwitchCompany.TreasureDropBlacklistArray.Contains<string>(eItem.Item.itemName))
                         {
                             itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
                         }
@@ -366,7 +366,7 @@ namespace TwitchCompany
                 itemPool = new List<SpawnableItemWithRarity>();
                 foreach (ExtendedItem eItem in PatchedContent.ExtendedItems)
                 {
-                    if (!eItem.Item.isScrap && TwitchCompany.SupplyDropBlacklistArray.Contains<string>(eItem.Item.itemName)) //apparently IsBuyableItem is misinfo, thanks paco for telling me this
+                    if (!eItem.Item.isScrap && !TwitchCompany.SupplyDropBlacklistArray.Contains<string>(eItem.Item.itemName)) //apparently IsBuyableItem is misinfo, thanks paco for telling me this
                     {
                         itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
                     }
