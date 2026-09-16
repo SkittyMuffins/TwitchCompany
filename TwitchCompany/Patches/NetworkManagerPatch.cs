@@ -8,25 +8,42 @@ namespace TwitchCompany.Patches
     [HarmonyPatch(typeof(NetworkManager))]
     internal static class NetworkManagerPatch
     {
+
+        //thanks crit you're a lifesaver
         [HarmonyPostfix]
         [HarmonyPatch(nameof(NetworkManager.SetSingleton))]
         private static void SetSingletonPostfix()
         {
-            TwitchCompany.coolPrefab = new GameObject("TwitchCompanyManager");
-            TwitchCompany.coolPrefab.hideFlags |= HideFlags.HideAndDontSave;
-            Object.DontDestroyOnLoad(TwitchCompany.coolPrefab);
-            var netcomponent = TwitchCompany.coolPrefab.AddComponent<NetworkObject>();
-            TwitchCompany.coolPrefab.AddComponent<TwitchCompanyManager>();
-            
-            netcomponent.GlobalObjectIdHash = GetHash("TwitchCompanyManager");
+            TwitchCompany.coolPrefab = CreateManagerPrefab();
 
-            NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(TwitchCompany.coolPrefab);
-            return;
+            NetworkManager.Singleton.AddNetworkPrefab(TwitchCompany.coolPrefab);
+        }
+
+        private static GameObject CreateManagerPrefab()
+        {
+            var prefabHolder = new GameObject("InactiveHolder")
+            {
+                hideFlags = HideFlags.HideAndDontSave
+            };
+
+            prefabHolder.SetActive(false);
+
+            var prefab = new GameObject("TwitchCompanyManager");
+            prefab.transform.SetParent(prefabHolder.transform);
+
+            var networkObject = prefab.AddComponent<NetworkObject>();
+            networkObject.SynchronizeTransform = false;
+            networkObject.AutoObjectParentSync = false;
+            networkObject.GlobalObjectIdHash = GetHash("TwitchCompanyManager");
 
             static uint GetHash(string value)
             {
                 return value?.Aggregate(17u, (current, c) => unchecked((current * 31) ^ c)) ?? 0u;
             }
+
+            prefab.AddComponent<TwitchCompanyManager>();
+
+            return prefab;
         }
     }
 }
