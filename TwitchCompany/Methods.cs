@@ -54,7 +54,7 @@ namespace TwitchCompany
             return null;
         }
 
-        public static void SummonItemsWithRarityAtLocation(List<SpawnableItemWithRarity> itemPool, int count, Vector3 pos, bool parentToShip)
+        public static void SummonItemsWithRarityAtLocation(List<SpawnableItemWithRarity> itemPool, int count, Vector3 pos, bool parentToShip, TwitchCompanyManager manager)
         {
             GameObject? ship = null;
             if(parentToShip)
@@ -75,6 +75,10 @@ namespace TwitchCompany
 
             //selecting the item via my other method and spawning it
             Item selectedItem = WeightedRandom<Item>(items, weights);
+
+            GrabbableObject[] spawnedItems = new GrabbableObject[count];
+            int[] values = new int[count];
+
             for(int i = 0; i<count; i++)
             {
                 Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
@@ -86,7 +90,12 @@ namespace TwitchCompany
                     //PLEASEEEE tell me this works
                     spawnedItem.transform.parent = ship.transform;
                 }
+
+                spawnedItems[i] = spawnedItem.GetComponent<GrabbableObject>();
+                values[i] = spawnedItems[i].scrapValue;
             }
+
+            manager.SyncItemValues(spawnedItems, values);
         }
 
         public static T WeightedRandom<T>(T[] items, int[] weights)

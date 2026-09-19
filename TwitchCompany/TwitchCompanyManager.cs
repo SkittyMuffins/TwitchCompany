@@ -317,6 +317,30 @@ namespace TwitchCompany
             spawnQueue.Enqueue((enemyType, count, playerID));
         }
 
+        public void SyncItemValues(GrabbableObject[] items, int[] values)
+        {
+            if(IsServer)
+            {
+                SyncItemValuesClientRpc(items, values);
+            }
+        }
+
+        [ClientRpc]
+        public void SyncItemValuesClientRpc(GrabbableObject[] items, int[] values)
+        {
+            for(int i = 0; i<items.Length; i++)
+            {
+                try
+                {
+                    items[i].SetScrapValue(values[i]);
+                }
+                catch(NullReferenceException e)
+                {
+                    TwitchCompany.Logger.LogError($"Skipping invalid item gameobject passed into SyncItemValuesClientRpc (name {items[i].name}) - {e.ToString()}");
+                }
+            }
+        }
+
         private static void ProcessSpawnQueue()
         {
             while (spawnQueue.Count > 0)
@@ -341,7 +365,7 @@ namespace TwitchCompany
             }
         }
 
-        private static void ItemDrop(bool scrap, int count, ConfigBuilder.ItemDropLocations location)
+        private void ItemDrop(bool scrap, int count, ConfigBuilder.ItemDropLocations location)
         {
             TwitchCompany.Logger.LogInfo($"Item drop called - spawning {count} items. Scrap: {scrap}");
             List<SpawnableItemWithRarity> itemPool;
@@ -374,20 +398,18 @@ namespace TwitchCompany
             }
 
             //Do actual spawning logic
-
-            //TODO this is busted and making/setting transform like it used to be throws a nullref FIX IT
             Vector3 position;
             switch(location)
             {
                 case ConfigBuilder.ItemDropLocations.InShip:
                     TwitchCompany.Logger.LogInfo("Trying to spawn items in ship");
                     position = StartOfRound.Instance.middleOfShipNode.position;
-                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, position, true);
+                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, position, true, this);
                     break;
                 case ConfigBuilder.ItemDropLocations.OnHost:
                     TwitchCompany.Logger.LogInfo("Trying to spawn items on streamer");
                     position = StartOfRound.Instance.localPlayerController.transform.position;
-                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, position, false);
+                    Methods.SummonItemsWithRarityAtLocation(itemPool, count, position, false, this);
                     break;
                 default:
                     TwitchCompany.Logger.LogError("Invalid item drop location provided. This message should not appear.");
