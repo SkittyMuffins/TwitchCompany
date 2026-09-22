@@ -317,30 +317,6 @@ namespace TwitchCompany
             spawnQueue.Enqueue((enemyType, count, playerID));
         }
 
-        public void SyncItemValues(GrabbableObject[] items, int[] values)
-        {
-            if(IsServer)
-            {
-                SyncItemValuesClientRpc(items, values);
-            }
-        }
-
-        [ClientRpc]
-        public void SyncItemValuesClientRpc(GrabbableObject[] items, int[] values)
-        {
-            for(int i = 0; i<items.Length; i++)
-            {
-                try
-                {
-                    items[i].SetScrapValue(values[i]);
-                }
-                catch(NullReferenceException e)
-                {
-                    TwitchCompany.Logger.LogError($"Skipping invalid item gameobject passed into SyncItemValuesClientRpc (name {items[i].name}) - {e.ToString()}");
-                }
-            }
-        }
-
         private static void ProcessSpawnQueue()
         {
             while (spawnQueue.Count > 0)

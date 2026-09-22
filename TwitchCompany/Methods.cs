@@ -76,7 +76,7 @@ namespace TwitchCompany
             //selecting the item via my other method and spawning it
             Item selectedItem = WeightedRandom<Item>(items, weights);
 
-            GrabbableObject[] spawnedItems = new GrabbableObject[count];
+            NetworkObjectReference[] spawnedItems = new NetworkObjectReference[count];
             int[] values = new int[count];
 
             for(int i = 0; i<count; i++)
@@ -91,11 +91,13 @@ namespace TwitchCompany
                     spawnedItem.transform.parent = ship.transform;
                 }
 
-                spawnedItems[i] = spawnedItem.GetComponent<GrabbableObject>();
-                values[i] = spawnedItems[i].scrapValue;
+                spawnedItems[i] = netObj;
+                values[i] = spawnedItem.GetComponent<GrabbableObject>().scrapValue;
             }
 
-            manager.SyncItemValues(spawnedItems, values);
+            //i was almost gonna FindObjectOfType this before ctrl+fing the lethal modding discord for it. thanks buttery for happening to talk about how zeeks does this and what he should be doing instead you saved me
+            
+            RoundManager.Instance.SyncScrapValuesClientRpc(spawnedItems, values);
         }
 
         public static T WeightedRandom<T>(T[] items, int[] weights)
