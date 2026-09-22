@@ -56,21 +56,14 @@ namespace TwitchCompany
 
         public static void SummonItemsWithRarityAtLocation(List<SpawnableItemWithRarity> itemPool, int count, Vector3 pos, bool parentToShip, TwitchCompanyManager manager)
         {
-            GameObject? ship = null;
-            if(parentToShip)
-            {
-                ship = GameObject.Find("HangarShip"); //this should get the ship if nothing else has named their gameobject that
-            }
-
             int[] weights = new int[itemPool.Count];
             Item[] items = new Item[itemPool.Count];
-            SpawnableItemWithRarity[] itemPoolArray = itemPool.ToArray();
             
-            //splitting everything into arrays for easier iteration + getting total weight in my other method
-            for(int i = 0; i<itemPoolArray.Length; i++)
+            //splitting everything for easier iteration + getting total weight in my other method
+            for(int i = 0; i<itemPool.Count; i++)
             {
-                weights[i] = itemPoolArray[i].rarity;
-                items[i] = itemPoolArray[i].spawnableItem;
+                weights[i] = itemPool[i].rarity;
+                items[i] = itemPool[i].spawnableItem;
             }
 
             //selecting the item via my other method and spawning it
@@ -81,18 +74,19 @@ namespace TwitchCompany
 
             for(int i = 0; i<count; i++)
             {
-                Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
-                GameObject spawnedItem = GameObject.Instantiate(selectedItem.spawnPrefab, pos, rotation);
+                GameObject spawnedItem = GameObject.Instantiate(selectedItem.spawnPrefab, pos, Quaternion.Euler(0, Random.Range(0f, 360f), 0));
+                GrabbableObject grab = spawnedItem.GetComponentInChildren<GrabbableObject>();
                 NetworkObject netObj = spawnedItem.GetComponentInChildren<NetworkObject>();
+                grab.scrapValue = (int)(RoundManager.Instance.AnomalyRandom.Next(selectedItem.minValue, selectedItem.maxValue) * RoundManager.Instance.scrapValueMultiplier);
+
                 netObj.Spawn();
-                if(ship is not null)
+                if(parentToShip)
                 {
-                    //PLEASEEEE tell me this works
-                    spawnedItem.transform.parent = ship.transform;
+                    spawnedItem.transform.parent = StartOfRound.Instance.shipAnimatorObject.transform;
                 }
 
                 spawnedItems[i] = netObj;
-                values[i] = spawnedItem.GetComponent<GrabbableObject>().scrapValue;
+                values[i] = grab.scrapValue;
             }
 
             //i was almost gonna FindObjectOfType this before ctrl+fing the lethal modding discord for it. thanks buttery for happening to talk about how zeeks does this and what he should be doing instead you saved me
