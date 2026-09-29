@@ -22,22 +22,12 @@ namespace TwitchCompany
         //fml i should've kept this here
         public static GameObject coolPrefab;
 
-        //Config entry things
-        public static string[] BALDWhitelistArray;
-        public static string[] BALDBlacklistArray;
-        public static string[] SupplyDropBlacklistArray;
-        public static string[] TreasureDropBlacklistArray;
-
         private void Awake()
         {
             Logger = base.Logger;
             Instance = this;
 
             ConfigBuilder.InitialiseConfig();
-            BALDWhitelistArray = Methods.CSVSeperator(ConfigBuilder.BALDWhitelist.Value);
-            BALDBlacklistArray = Methods.CSVSeperator(ConfigBuilder.BALDBlacklist.Value);
-            SupplyDropBlacklistArray = Methods.CSVSeperator(ConfigBuilder.SupplyDropBlacklist.Value);
-            TreasureDropBlacklistArray = Methods.CSVSeperator(ConfigBuilder.TreasureDropBlacklist.Value);
 
             Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
             Harmony.PatchAll();

@@ -72,6 +72,7 @@ namespace TwitchCompany
             NetworkObjectReference[] spawnedItems = new NetworkObjectReference[count];
             int[] values = new int[count];
 
+            //TODO make this go backwards
             for(int i = 0; i<count; i++)
             {
                 GameObject spawnedItem = GameObject.Instantiate(selectedItem.spawnPrefab, pos, Quaternion.Euler(0, Random.Range(0f, 360f), 0));
