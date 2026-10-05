@@ -19,7 +19,14 @@ namespace TwitchCompany
         internal new static ManualLogSource Logger { get; private set; } = null!;
         internal static Harmony? Harmony { get; set; }
 
-        //fml i should've kept this here
+        //Config array setups
+        public static string[] BALDWhitelistArray;
+        public static string[] BALDBlacklistArray;
+        public static string[] SupplyDropBlacklistArray;
+        public static string[] TreasureDropBlacklistArray;
+        public static string[] CalloutNamesArray;
+        public static string[] CalloutMessagesArray;
+
         public static GameObject coolPrefab;
 
         private void Awake()
@@ -28,6 +35,12 @@ namespace TwitchCompany
             Instance = this;
 
             ConfigBuilder.InitialiseConfig();
+            BALDWhitelistArray = Methods.CSVSeperator(ConfigBuilder.BALDWhitelist.Value);
+            BALDBlacklistArray = Methods.CSVSeperator(ConfigBuilder.BALDBlacklist.Value);
+            SupplyDropBlacklistArray = Methods.CSVSeperator(ConfigBuilder.SupplyDropBlacklist.Value);
+            TreasureDropBlacklistArray = Methods.CSVSeperator(ConfigBuilder.TreasureDropBlacklist.Value);
+            CalloutNamesArray = Methods.CSVSeperator(ConfigBuilder.CalloutNames.Value);
+            CalloutMessagesArray = Methods.CSVSeperator(ConfigBuilder.CalloutMessages.Value);
 
             Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
             Harmony.PatchAll();

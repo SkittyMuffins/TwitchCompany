@@ -16,16 +16,17 @@ namespace TwitchCompany
         public static ConfigEntry<bool> EnableBALD { get; set; }
         public static ConfigEntry<string> BALDPrefix { get; set; }
         public static ConfigEntry<bool> EnableBALDWhitelist { get; set; }
-        public static ConfigEntry<string[]> BALDWhitelist { get; set; }
+        public static ConfigEntry<string> BALDWhitelist { get; set; }
         public static ConfigEntry<bool> EnableBALDBlacklist { get; set; }
-        public static ConfigEntry<string[]> BALDBlacklist { get; set; }
+        public static ConfigEntry<string> BALDBlacklist { get; set; }
         public static ConfigEntry<bool> VIPSCanBALD { get; set; }
         public static ConfigEntry<bool> SubscribersCanBALD { get; set; }
         public static ConfigEntry<bool> ModsCanBALD { get; set; }
 
         //Callouts
-        public static ConfigEntry<string[]> CalloutNames { get; set; }
-        public static ConfigEntry<string[]> CalloutMessages { get; set; }
+        public static ConfigEntry<bool> EnableCallouts { get; set; }
+        public static ConfigEntry<string> CalloutNames { get; set; }
+        public static ConfigEntry<string> CalloutMessages { get; set; }
 
         /// <summary>
         /// Config entries for things that require raid handling
@@ -85,14 +86,14 @@ namespace TwitchCompany
         /// </summary>
         public static ConfigEntry<int> SupplyDropMaxSize { get; set; }
         public static ConfigEntry<ItemDropLocations> SupplyDropLocation { get; set; }
-        public static ConfigEntry<string[]> SupplyDropBlacklist { get; set; }
+        public static ConfigEntry<string> SupplyDropBlacklist { get; set; }
 
         /// <summary>
         /// Config entries for treasure drops
         /// </summary>
         public static ConfigEntry<int> TreasureDropMaxSize { get; set; }
         public static ConfigEntry<ItemDropLocations> TreasureDropLocation { get; set; }
-        public static ConfigEntry<string[]> TreasureDropBlacklist { get; set; }
+        public static ConfigEntry<string> TreasureDropBlacklist { get; set; }
 
 
         public static void InitialiseConfig()
@@ -128,11 +129,11 @@ namespace TwitchCompany
                 "If enabled, only chatters on the whitelist will be able to use BALD chat."
                 );
 
-            BALDWhitelist = TwitchCompany.Instance.Config.Bind<string[]>(
+            BALDWhitelist = TwitchCompany.Instance.Config.Bind<string>(
                 "Chat Events",
                 "BALD Chat Whitelist",
-                [],
-                "A list of usernames that are allowed to use BALD chat. Only used if the whitelist is enabled."
+                "",
+                "A comma-seperated list of usernames that are allowed to use BALD chat. Only used if the whitelist is enabled."
                 );
 
             EnableBALDBlacklist = TwitchCompany.Instance.Config.Bind<bool>(
@@ -142,11 +143,11 @@ namespace TwitchCompany
                 "If enabled, chatters on the blacklist will not be able to use BALD chat."
                 );
 
-            BALDBlacklist = TwitchCompany.Instance.Config.Bind<string[]>(
+            BALDBlacklist = TwitchCompany.Instance.Config.Bind<string>(
                 "Chat Events",
                 "BALD Chat Blacklist",
-                [],
-                "A list of usernames that are not allowed to use BALD chat. Only used if the blacklist is enabled."
+                "",
+                "A comma-seperated list of usernames that are not allowed to use BALD chat. Only used if the blacklist is enabled."
                 );
 
             //BALD chat role permissions
@@ -172,18 +173,25 @@ namespace TwitchCompany
                 );
 
             //Callout stuffs
-            CalloutNames = TwitchCompany.Instance.Config.Bind<string[]>(
+            EnableCallouts = TwitchCompany.Instance.Config.Bind<bool>(
                 "Chat Events",
-                "Callout Names",
-                ["skittymuffins"],
-                "List of Twitch usernames that TwitchCompany will recognise and put a personalised tip onscreen for the first time they speak in your chat every session."
+                "Enable Callouts",
+                false,
+                "Enable custom callouts for users specified in below config entries that will be displayed onscreen the first time they speak in chat."
                 );
 
-            CalloutMessages = TwitchCompany.Instance.Config.Bind<string[]>(
+            CalloutNames = TwitchCompany.Instance.Config.Bind<string>(
+                "Chat Events",
+                "Callout Names",
+                "skittymuffins",
+                "Comma-seperated list of Twitch usernames that TwitchCompany will recognise and put a personalised tip onscreen for the first time they speak in your chat every session."
+                );
+
+            CalloutMessages = TwitchCompany.Instance.Config.Bind<string>(
                 "Chat Events",
                 "Callout Messages",
-                ["Sample message|if you're seeing this you forgot to config twitchcompany callouts and now the mod dev is in your chat to see it. you fool. you buffoon."],
-                "The messages that'll be sent via tips when someone in the list in CalloutNames speaks in chat for the first time every session, in order of their placement in that list. Title and content are seperated with |."
+                "Sample message|if you're seeing this you forgot to config twitchcompany callouts and now the mod dev is in your chat to see it. you fool. you buffoon.",
+                "Comma-seperated list containing the messages that'll be sent via tips when someone in the list in CalloutNames speaks in chat for the first time every session, in order of their placement in that list. Title and content are seperated with |."
                 );
 
             //Raid events
@@ -380,11 +388,11 @@ namespace TwitchCompany
                 "The location where the supply drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
                 );
 
-            SupplyDropBlacklist = TwitchCompany.Instance.Config.Bind<string[]>(
+            SupplyDropBlacklist = TwitchCompany.Instance.Config.Bind<string>(
                 "Supply Drops",
                 "Supply Drop Blacklist",
-                ["Mapper","Binoculars"],
-                "A list of items that can't spawn from supply drops."
+                "Mapper,Binoculars",
+                "A comma-seperated list of items that can't spawn from supply drops."
                 );
 
             //Treasure drop settings
@@ -402,11 +410,11 @@ namespace TwitchCompany
                 "The location where the treasure drop will arrive. Can be spawned in the middle of the ship (InShip) or on the host player (OnHost)."
                 );
 
-            TreasureDropBlacklist = TwitchCompany.Instance.Config.Bind<string[]>(
+            TreasureDropBlacklist = TwitchCompany.Instance.Config.Bind<string>(
                 "Treasure Drops",
                 "Treasure Drop Blacklist",
-                ["Mapper","Binoculars"],
-                "A list of items that can't spawn from treasure drops."
+                "Mapper,Binoculars",
+                "A comma-seperated list of items that can't spawn from treasure drops."
                 );
         }
 

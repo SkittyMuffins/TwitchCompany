@@ -8,6 +8,7 @@ using TwitchChatAPI;
 using TwitchChatAPI.Objects;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
@@ -40,6 +41,25 @@ namespace TwitchCompany
                 entries[i] = entries[i].Trim();
             }
             return entries;
+        }
+
+        public static string[][] SplitIntoTwoStringArrays(string[] array, char delimiter)
+        {
+            string[] arr1 = new string[array.Length];
+            string[] arr2 = new string[array.Length];
+
+            for(int i = 0; i<array.Length; i++)
+            {
+                string[] parts = array[i].Split(delimiter);
+                arr1[i] = parts[0];
+                arr2[i] = parts[1];
+            }
+
+            string[][] compoundArray = new string[2][];
+            compoundArray[0] = arr1;
+            compoundArray[1] = arr2;
+
+            return compoundArray;
         }
 
         public static PlayerControllerB getPlayerByID(ulong actualclientid)

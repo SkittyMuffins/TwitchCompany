@@ -21,11 +21,33 @@ namespace TwitchCompany
     {
         private static Queue<(string enemyType, int count, ulong playerID)> spawnQueue = new Queue<(string enemyType, int count, ulong playerID)>();
         private static bool canSpawn = false;
+        private bool calloutsVerified = true;
+        private string[] calloutTitles;
+        private string[] calloutMessages;
 
-        private List<String> spokenThisSession;
+        private List<string> spokenThisSession;
 
         private void Awake()
         {
+            spokenThisSession = new List<string>();
+
+            string[][] callouts;
+
+            if(ConfigBuilder.EnableCallouts.Value)
+            {
+                try
+                {
+                    callouts = Methods.SplitIntoTwoStringArrays(TwitchCompany.CalloutMessagesArray, '|');
+                    calloutTitles = callouts[0];
+                    calloutMessages = callouts[1];
+                }
+                catch (Exception e)
+                {
+                    TwitchCompany.Logger.LogError($"Failed to properly split callout messages defined in config: {e.ToString()} - Disabling callouts for this session.");
+                    calloutsVerified = false;
+                }
+            }
+
             //can prob clear this later
             TwitchCompany.Logger.LogInfo("TwitchCompanyManager instantiated successfully!");
         }
@@ -55,9 +77,22 @@ namespace TwitchCompany
 
             TwitchCompany.Logger.LogInfo($"Received message from {message.User.DisplayName}: {message.Message}");
 
-            if(!spokenThisSession.Contains(message.User.Username))
+            if(ConfigBuilder.EnableCallouts.Value && calloutsVerified)
             {
-                spokenThisSession.Add(message.User.Username);
+                TwitchCompany.Logger.LogDebug("Checking for callout.");
+                TwitchCompany.Logger.LogDebug(spokenThisSession.Contains(message.User.Username));
+                TwitchCompany.Logger.LogDebug(TwitchCompany.CalloutNamesArray.Contains(message.User.Username));
+
+                if (!spokenThisSession.Contains(message.User.Username) && TwitchCompany.CalloutNamesArray.Contains(message.User.Username))
+                {
+                    TwitchCompany.Logger.LogDebug($"User {message.User.Username} has a callout and has yet to speak this session. Adding them to the list.");
+                    spokenThisSession.Add(message.User.Username);
+
+                    TwitchCompany.Logger.LogDebug("Getting index of their name in array...");
+                    int index = Array.IndexOf(TwitchCompany.CalloutNamesArray, message.User.Username);
+                    TwitchCompany.Logger.LogDebug($"Name found at index {index}, now sending callout.");
+                    Methods.Tip(calloutTitles[index], calloutMessages[index], false);
+                }
             }
 
             //check for BALD chats
@@ -256,7 +291,7 @@ namespace TwitchCompany
                     //this is some ugly ass code but idk how to make it any better
                     if(ConfigBuilder.EnableBALDWhitelist.Value)
                     {
-                        if(Array.Exists(ConfigBuilder.BALDWhitelist.Value, username => username.Equals(message.User.Username, StringComparison.OrdinalIgnoreCase)))
+                        if(Array.Exists(TwitchCompany.BALDWhitelistArray, username => username.Equals(message.User.Username, StringComparison.OrdinalIgnoreCase)))
                         {
                             SendBALD(message);
                             return;
@@ -265,7 +300,7 @@ namespace TwitchCompany
 
                     if(ConfigBuilder.EnableBALDBlacklist.Value)
                     {
-                        if(!Array.Exists(ConfigBuilder.BALDBlacklist.Value, username => username.Equals(message.User.Username, StringComparison.OrdinalIgnoreCase)))
+                        if(!Array.Exists(TwitchCompany.BALDBlacklistArray, username => username.Equals(message.User.Username, StringComparison.OrdinalIgnoreCase)))
                         {
                             SendBALD(message);
                             return;
@@ -361,7 +396,7 @@ namespace TwitchCompany
                     TwitchCompany.Logger.LogInfo("Current moon has no spawnable scrap. Pulling from LLL ExtendedItems list for treasure drop.");
                     foreach(ExtendedItem eItem in PatchedContent.ExtendedItems)
                     {
-                        if(eItem.Item.isScrap && eItem.Item.maxValue > 0 && !ConfigBuilder.TreasureDropBlacklist.Value.Contains<string>(eItem.Item.itemName))
+                        if(eItem.Item.isScrap && eItem.Item.maxValue > 0 && !TwitchCompany.TreasureDropBlacklistArray.Contains<string>(eItem.Item.itemName))
                         {
                             itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
                         }
@@ -373,7 +408,7 @@ namespace TwitchCompany
                 itemPool = new List<SpawnableItemWithRarity>();
                 foreach (ExtendedItem eItem in PatchedContent.ExtendedItems)
                 {
-                    if (!eItem.Item.isScrap && !ConfigBuilder.SupplyDropBlacklist.Value.Contains<string>(eItem.Item.itemName)) //apparently IsBuyableItem is misinfo, thanks paco for telling me this
+                    if (!eItem.Item.isScrap && !TwitchCompany.SupplyDropBlacklistArray.Contains<string>(eItem.Item.itemName)) //apparently IsBuyableItem is misinfo, thanks paco for telling me this
                     {
                         itemPool.Add(new SpawnableItemWithRarity(eItem.Item, 1));
                     }
